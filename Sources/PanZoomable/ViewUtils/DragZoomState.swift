@@ -1,7 +1,7 @@
 import Foundation
 
 @Observable
-class DragZoomState {
+public class DragZoomState {
 
     //Drag:
     var isDragging: Bool = false
@@ -9,11 +9,17 @@ class DragZoomState {
     var currentlyPerformedTranslation: CGSize = .zero
     var zoomCompensationTranslation: CGSize = .zero
 
-    var totalTranslation: CGSize {
+    public init() {}
+
+    public var totalTranslation: CGSize {
         translationBaseline + currentlyPerformedTranslation + zoomCompensationTranslation
     }
 
-    func resetTranslation() {
+    public func setTranslation(_ translation: CGSize) {
+        translationBaseline = translation
+    }
+
+    public func resetTranslation() {
         translationBaseline = .zero
         currentlyPerformedTranslation = .zero
     }
@@ -23,11 +29,11 @@ class DragZoomState {
     var scaleBaseline: CGFloat = 1.0
     var currentlyPerformedScale: CGFloat = 1.0
 
-    var totalScale: CGFloat {
+    public var totalScale: CGFloat {
         scaleBaseline * currentlyPerformedScale
     }
 
-    func resetScale() {
+    public func resetScale() {
         scaleBaseline = 1.0
         currentlyPerformedScale = 1.0
         zoomCompensationTranslation = .zero

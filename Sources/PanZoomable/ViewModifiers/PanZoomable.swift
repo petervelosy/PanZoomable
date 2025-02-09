@@ -3,7 +3,11 @@ import SwiftUI
 
 public struct PanZoomable: ViewModifier {
 
-    @State private var dragZoomState = DragZoomState()
+    @Binding private var dragZoomState: DragZoomState
+
+    public init(dragZoomState: Binding<DragZoomState>) {
+        self._dragZoomState = dragZoomState
+    }
 
     public func body(content: Content) -> some View {
         ZStack {
@@ -67,7 +71,7 @@ public struct PanZoomable: ViewModifier {
 }
 
 public extension View {
-    func panZoomable() -> some View {
-        self.modifier(PanZoomable())
+    func panZoomable(state: Binding<DragZoomState>) -> some View {
+        self.modifier(PanZoomable(dragZoomState: state))
     }
 }
