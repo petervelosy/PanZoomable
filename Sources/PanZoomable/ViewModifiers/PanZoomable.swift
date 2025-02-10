@@ -11,19 +11,17 @@ public struct PanZoomable: ViewModifier {
 
     public func body(content: Content) -> some View {
         ZStack {
-            // Background to make the whole area responsive to gestures:
+            // Background to make the whole area responsive to gestures, even if the manipulated object gets smaller than the entire view:
             Color.clear
               .contentShape(Rectangle())
-              .highPriorityGesture(magnifyGesture)
-              .highPriorityGesture(dragGesture)
 
             content
                 .scaleEffect(dragZoomState.totalScale, anchor: .center)
                 .offset(dragZoomState.totalTranslation)
-                // If these are highPriorityGestures, magnify before drag works, but not vice versa.
-                .highPriorityGesture(magnifyGesture)
-                .highPriorityGesture(dragGesture)
         }
+        // If these are highPriorityGestures, magnify before drag works, but not vice versa.
+        .highPriorityGesture(magnifyGesture)
+        .highPriorityGesture(dragGesture)
     }
 
     private var magnifyGesture: some Gesture {
