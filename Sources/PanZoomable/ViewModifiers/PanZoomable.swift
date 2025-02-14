@@ -19,9 +19,7 @@ public struct PanZoomable: ViewModifier {
                 .scaleEffect(dragZoomState.totalScale, anchor: .center)
                 .offset(dragZoomState.totalTranslation)
         }
-        // If these are highPriorityGestures, magnify before drag works, but not vice versa.
-        .highPriorityGesture(magnifyGesture)
-        .highPriorityGesture(dragGesture)
+        .gesture(magnifyGesture.simultaneously(with: dragGesture))
     }
 
     private var magnifyGesture: some Gesture {
@@ -53,6 +51,7 @@ public struct PanZoomable: ViewModifier {
     private var dragGesture: some Gesture {
         DragGesture()
             .onChanged { value in
+                print("drag change")
                 if !dragZoomState.isDragging {
                     dragZoomState.isDragging = true
                 }
