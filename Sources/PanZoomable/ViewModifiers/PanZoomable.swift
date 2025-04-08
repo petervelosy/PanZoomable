@@ -5,17 +5,26 @@ public struct PanZoomable: ViewModifier {
 
     @Binding private var dragZoomState: DragZoomState
     private var entireViewSize: (CGSize, CGSize)
+    private var autoZoomToFit: Bool
 
-    public init(dragZoomState: Binding<DragZoomState>, entireViewSize: (CGSize, CGSize)) {
+    // Makes sure that auto zoom to fit is just performed once.
+    @State private var autoZoomToFitPerformed = false
+
+    public init(
+        dragZoomState: Binding<DragZoomState>,
+        entireViewSize: (CGSize, CGSize),
+        autoZoomToFit: Bool
+    ) {
         self._dragZoomState = dragZoomState
         self.entireViewSize = entireViewSize
+        self.autoZoomToFit = autoZoomToFit
     }
 
     public func body(content: Content) -> some View {
         ZStack {
             // Background to make the whole area responsive to gestures, even if the manipulated object gets smaller than the entire view:
             Color.clear
-              .contentShape(Rectangle())
+                .contentShape(Rectangle())
 
             content
                 .scaleEffect(dragZoomState.totalScale, anchor: .center)
@@ -24,6 +33,10 @@ public struct PanZoomable: ViewModifier {
                     // TODO: Use a more meaningful struct
                     dragZoomState.contentSize = entireViewSize.0
                     dragZoomState.contentFitOffset = entireViewSize.1
+                    if autoZoomToFit && !autoZoomToFitPerformed {
+                        dragZoomState.zoomToFit()
+                        autoZoomToFitPerformed = true
+                    }
                 }
         }
         .overlay {
@@ -88,7 +101,15 @@ public struct PanZoomable: ViewModifier {
 }
 
 public extension View {
-    func panZoomable(state: Binding<DragZoomState>, entireViewSize: (CGSize, CGSize)) -> some View {
-        self.modifier(PanZoomable(dragZoomState: state, entireViewSize: entireViewSize))
+    func panZoomable(
+        state: Binding<DragZoomState>,
+        entireViewSize: (CGSize, CGSize),
+        autoZoomToFit: Bool
+    ) -> some View {
+        self.modifier(PanZoomable(
+            dragZoomState: state,
+            entireViewSize: entireViewSize,
+            autoZoomToFit: autoZoomToFit
+        ))
     }
 }
