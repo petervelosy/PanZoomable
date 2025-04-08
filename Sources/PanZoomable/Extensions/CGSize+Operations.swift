@@ -31,4 +31,8 @@ extension CGSize {
     static func / (lhs: CGSize, rhs: CGFloat) -> CGSize {
         return CGSize(width: lhs.width / rhs, height: lhs.height / rhs)
     }
+
+    static prefix func - (_ size: CGSize) -> CGSize {
+        return CGSize(width: -size.width, height: -size.height)
+    }
 }

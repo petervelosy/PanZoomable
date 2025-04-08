@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "PanZoomable",
-    platforms: [.iOS(.v18), .macOS(.v15), .tvOS(.v13), .watchOS(.v6)],
+    platforms: [.iOS(.v18), .macOS(.v15), .tvOS(.v13), .watchOS(.v10)],
     products: [
         .library(
             name: "PanZoomable",
