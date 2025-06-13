@@ -4,10 +4,10 @@ import Foundation
 public class DragZoomState {
 
     // Drag:
-    var isDragging: Bool = false
-    var translationBaseline: CGSize = .zero
-    var currentlyPerformedTranslation: CGSize = .zero
-    var zoomCompensationTranslation: CGSize = .zero
+    public var isDragging: Bool = false
+    public var translationBaseline: CGSize = .zero
+    public var currentlyPerformedTranslation: CGSize = .zero
+    public var zoomCompensationTranslation: CGSize = .zero
 
     public init() {}
 
@@ -25,9 +25,9 @@ public class DragZoomState {
     }
 
     // Zoom:
-    var isZooming: Bool = false
-    var scaleBaseline: CGFloat = 1.0
-    var currentlyPerformedScale: CGFloat = 1.0
+    public var isZooming: Bool = false
+    public var scaleBaseline: CGFloat = 1.0
+    public var currentlyPerformedScale: CGFloat = 1.0
 
     public var totalScale: CGFloat {
         scaleBaseline * currentlyPerformedScale

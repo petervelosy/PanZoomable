@@ -4,7 +4,7 @@ import SwiftUI
 public struct PanZoomable: ViewModifier {
 
     @Binding private var dragZoomState: DragZoomState
-    private var entireViewSize: (CGSize, CGSize)
+    private var entireViewSize: EntireViewSize? // Only required for auto zoom to fit.
     private var autoZoomToFit: Bool
 
     // Makes sure that auto zoom to fit is just performed once.
@@ -12,7 +12,7 @@ public struct PanZoomable: ViewModifier {
 
     public init(
         dragZoomState: Binding<DragZoomState>,
-        entireViewSize: (CGSize, CGSize),
+        entireViewSize: EntireViewSize?,
         autoZoomToFit: Bool
     ) {
         self._dragZoomState = dragZoomState
@@ -29,13 +29,14 @@ public struct PanZoomable: ViewModifier {
             content
                 .scaleEffect(dragZoomState.totalScale, anchor: .center)
                 .offset(dragZoomState.totalTranslation)
-                .task {
-                    // TODO: Use a more meaningful struct
-                    dragZoomState.contentSize = entireViewSize.0
-                    dragZoomState.contentFitOffset = entireViewSize.1
-                    if autoZoomToFit && !autoZoomToFitPerformed {
-                        dragZoomState.zoomToFit()
-                        autoZoomToFitPerformed = true
+                .task(id: entireViewSize) {
+                    if let entireViewSize {
+                        dragZoomState.contentSize = entireViewSize.contentSize
+                        dragZoomState.contentFitOffset = entireViewSize.contentFitOffset
+                        if autoZoomToFit && !autoZoomToFitPerformed {
+                            dragZoomState.zoomToFit()
+                            autoZoomToFitPerformed = true
+                        }
                     }
                 }
         }
@@ -51,6 +52,7 @@ public struct PanZoomable: ViewModifier {
         .gesture(magnifyGesture.simultaneously(with: dragGesture))
 #else
         .gesture(dragGesture)
+        .gesture(doubleTapGesture)
 #endif
     }
 
@@ -98,12 +100,20 @@ public struct PanZoomable: ViewModifier {
             }
     }
 
+    private var doubleTapGesture: some Gesture {
+        TapGesture(count: 2)
+            .onEnded { _ in
+                dragZoomState.scaleBaseline *= 1.5
+                dragZoomState.currentlyPerformedScale = 1.0
+            }
+    }
+
 }
 
 public extension View {
     func panZoomable(
         state: Binding<DragZoomState>,
-        entireViewSize: (CGSize, CGSize),
+        entireViewSize: EntireViewSize?,
         autoZoomToFit: Bool
     ) -> some View {
         self.modifier(PanZoomable(
